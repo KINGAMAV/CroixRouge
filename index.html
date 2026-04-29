@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Croix-Rouge CI — Gestion des Infrastructures</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ Page de connexion ============ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="cross-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 3h6v6h6v6h-6v6H9v-6H3v-6h6z"/></svg>
+      </div>
+      <h1>Croix-Rouge de Côte d'Ivoire</h1>
+      <p>Système de Gestion des Infrastructures</p>
+    </div>
+    <div class="login-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Accès sécurisé — Identifiez-vous pour continuer
+    </div>
+    <div class="form-group">
+      <label for="loginUser">Identifiant</label>
+      <input type="text" id="loginUser" class="form-input" placeholder="Votre identifiant" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label for="loginPass">Mot de passe</label>
+      <input type="password" id="loginPass" class="form-input" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" onclick="doLogin()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Se connecter
+    </button>
+    <div class="login-error" id="loginError">❌ Identifiant ou mot de passe incorrect.</div>
+    <div class="login-hint">Contactez votre administrateur si vous avez oublié vos identifiants.</div>
+  </div>
+</div>
+
+<!-- ============ Page admin ============ -->
+<div id="app">
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- êntête -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="mini-cross">
+        <svg viewBox="0 0 24 24" ><path d="M9 3h6v6h6v6h-6v6H9v-6H3v-6h6z" fill="#ff0000"/></svg>
+      </div>
+      <div>
+        <h1>Croix-Rouge CI</h1>
+        <span>Gestion des Infrastructures</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-time" id="topbarTime"></span>
+      <div class="user-badge">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <div class="uname" id="userDisplayName">Administrateur</div>
+          <div class="ulevel" id="userDisplayLevel">Niveau 4</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">🚪 <span class="logout-text">Déconnexion</span></button>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Principal</div>
+        <div class="nav-item active" onclick="showPage('dashboard')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Tableau de bord
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Stock</div>
+        <div class="nav-item" onclick="showPage('products')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Catalogue produits
+        </div>
+        <div class="nav-item" onclick="showPage('entries')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Entrées (Dons reçus)
+        </div>
+        <div class="nav-item" onclick="showPage('exits')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Sorties (Distributions)
+        </div>
+        <div class="nav-item" onclick="showPage('stock')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          État du stock
+          <span class="nav-badge" id="alertBadge" style="display:none">!</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Organisation</div>
+        <div class="nav-item" onclick="showPage('regions')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Régions & Villes
+        </div>
+        <div class="nav-item" onclick="showPage('reports')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Rapports
+        </div>
+      </div>
+      <div class="nav-section" id="navAdminSection">
+        <div class="nav-label">Administration</div>
+        <div class="nav-item" onclick="showPage('users')" id="navUsers">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Utilisateurs
+        </div>
+        <div class="nav-item" onclick="showPage('activity')" id="navActivity">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Journal d'activité
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="page active" id="dashboardPage">
+        <div class="welcome-banner">
+          <div class="welcome-text">
+            <h2>Bienvenue, <span id="welcomeName">Utilisateur</span> 👋</h2>
+            <p>Voici un résumé de l'état actuel des infrastructures de la Croix-Rouge CI</p>
+          </div>
+          <svg class="cross-bg" viewBox="0 0 24 24" fill="white"><path d="M9 3h6v6h6v6h-6v6H9v-6H3v-6h6z"/></svg>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card red">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+            <div class="stat-value" id="dashTotalProducts">0</div>
+            <div class="stat-label">Produits enregistrés</div>
+          </div>
+          <div class="stat-card navy">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="stat-value" id="dashTotalEntries">0</div>
+            <div class="stat-label">Entrées ce mois</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+            <div class="stat-value" id="dashTotalExits">0</div>
+            <div class="stat-label">Sorties ce mois</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>
+            <div class="stat-value" id="dashTotalRegions">0</div>
+            <div class="stat-label">Régions couvertes</div>
+          </div>
+        </div>
+
+        <div class="dash-panels" style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="card">
+            <div class="card-header">
+              <h3>📦 Derniers mouvements</h3>
+              <button class="btn btn-sm btn-ghost" onclick="showPage('stock')">Voir tout</button>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div id="dashMovements"><div class="empty-state" style="padding:30px"><p>Aucun mouvement enregistré</p></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>⚠️ Alertes</h3></div>
+            <div class="card-body" id="dashAlerts"><p style="color:var(--text-muted);font-size:14px">Aucune alerte active</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>📊 Activité récente des utilisateurs</h3></div>
+          <div class="card-body" id="dashActivity">
+            <p style="color:var(--text-muted);font-size:14px">Chargement...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRODUCTS ===== -->
+      <div class="page" id="productsPage">
+        <div class="page-header">
+          <div>
+            <h2>📦 Catalogue des produits</h2>
+            <p>Gérez tous les produits et articles enregistrés</p>
+          </div>
+          <div class="page-actions">
+            <div class="search-bar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" placeholder="Rechercher un produit..." id="productSearch" oninput="filterTable('productSearch','productsTable')">
+            </div>
+            <button class="btn btn-primary" onclick="openModal('productModal')" id="btnAddProduct">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouveau produit
+            </button>
+          </div>
+        </div>
+        <div class="info-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Chaque produit reçoit automatiquement un <strong>numéro unique</strong>. Vous pouvez définir si un produit est conditionné en cartons contenant des paquets.
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table id="productsTable">
+                <thead>
+                  <tr>
+                    <th>N° Produit</th>
+                    <th>Désignation</th>
+                    <th>Catégorie</th>
+                    <th>Unité</th>
+                    <th>Carton</th>
+                    <th>Stock actuel</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ENTRIES ===== -->
+      <div class="page" id="entriesPage">
+        <div class="page-header">
+          <div>
+            <h2>📥 Entrées — Dons reçus</h2>
+            <p>Enregistrez tous les dons et approvisionnements reçus</p>
+          </div>
+          <div class="page-actions">
+            <div class="search-bar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" placeholder="Rechercher..." id="entrySearch" oninput="filterTable('entrySearch','entriesTable')">
+            </div>
+            <button class="btn btn-success" onclick="openModal('entryModal')" id="btnAddEntry">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouvelle entrée
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table id="entriesTable">
+                <thead>
+                  <tr>
+                    <th>N° Mouvement</th>
+                    <th>Date</th>
+                    <th>Produit</th>
+                    <th>Qté (Cartons)</th>
+                    <th>Qté (Paquets)</th>
+                    <th>Donateur</th>
+                    <th>Date exp.</th>
+                    <th>Enregistré par</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="entriesTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EXITS ===== -->
+      <div class="page" id="exitsPage">
+        <div class="page-header">
+          <div>
+            <h2>📤 Sorties — Distributions</h2>
+            <p>Enregistrez toutes les distributions et sorties de stock</p>
+          </div>
+          <div class="page-actions">
+            <div class="search-bar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" placeholder="Rechercher..." id="exitSearch" oninput="filterTable('exitSearch','exitsTable')">
+            </div>
+            <button class="btn btn-primary" onclick="openModal('exitModal')" id="btnAddExit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouvelle sortie
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table id="exitsTable">
+                <thead>
+                  <tr>
+                    <th>N° Mouvement</th>
+                    <th>Date</th>
+                    <th>Produit</th>
+                    <th>Qté (Cartons)</th>
+                    <th>Qté (Paquets)</th>
+                    <th>Région / Ville</th>
+                    <th>Bénéficiaire</th>
+                    <th>Enregistré par</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="exitsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== STOCK ===== -->
+      <div class="page" id="stockPage">
+        <div class="page-header">
+          <div>
+            <h2>🏭 État du stock</h2>
+            <p>Vue globale de tous les produits en stock</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ Imprimer</button>
+          </div>
+        </div>
+        <div id="expiryAlerts" style="margin-bottom:16px"></div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>N° Produit</th>
+                    <th>Désignation</th>
+                    <th>Stock (Cartons)</th>
+                    <th>Stock (Paquets)</th>
+                    <th>Total entrées</th>
+                    <th>Total sorties</th>
+                    <th>Prochaine exp.</th>
+                    <th>État</th>
+                  </tr>
+                </thead>
+                <tbody id="stockTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REGIONS ===== -->
+      <div class="page" id="regionsPage">
+        <div class="page-header">
+          <div>
+            <h2>🗺️ Régions & Villes</h2>
+            <p>Gérez les zones d'intervention de la Croix-Rouge CI</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="openModal('regionModal')" id="btnAddRegion">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouvelle région
+            </button>
+          </div>
+        </div>
+        <div id="regionsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px"></div>
+      </div>
+
+      <!-- ===== REPORTS ===== -->
+      <div class="page" id="reportsPage">
+        <div class="page-header">
+          <div><h2>📊 Rapports & Analyses</h2><p>Vue d'ensemble des activités</p></div>
+          <div class="page-actions">
+            <button class="btn btn-ghost btn-sm" onclick="exportReport()">📥 Exporter CSV</button>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('reports','overview')">Vue générale</button>
+          <button class="tab-btn" onclick="switchTab('reports','byRegion')">Par région</button>
+          <button class="tab-btn" onclick="switchTab('reports','byProduct')">Par produit</button>
+        </div>
+        <div class="tab-panel active" id="reports-overview">
+          <div class="stats-grid" id="reportStats"></div>
+          <div class="card" style="margin-top:20px">
+            <div class="card-header"><h3>Tous les mouvements</h3></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>N°</th><th>Date</th><th>Type</th><th>Produit</th><th>Cartons</th><th>Paquets</th><th>Région</th><th>Opérateur</th></tr></thead>
+                  <tbody id="allMovementsTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="reports-byRegion">
+          <div id="regionReport"></div>
+        </div>
+        <div class="tab-panel" id="reports-byProduct">
+          <div id="productReport"></div>
+        </div>
+      </div>
+
+      <!-- ===== USERS ===== -->
+      <div class="page" id="usersPage">
+        <div class="page-header">
+          <div><h2>👥 Gestion des utilisateurs</h2><p>Gérez les comptes et les niveaux d'accès</p></div>
+          <div class="page-actions">
+            <button class="btn btn-primary" id="addUserBtn" onclick="openModal('userModal')" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouvel utilisateur
+            </button>
+          </div>
+        </div>
+
+        <div class="users-levels" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+          <div class="card" style="padding:16px;text-align:center">
+            <div style="font-size:28px;font-weight:700;color:var(--text-muted)" id="countL1">0</div>
+            <div class="level-badge level-1" style="display:inline-block;margin-top:4px">Observateur</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Lecture seule</div>
+          </div>
+          <div class="card" style="padding:16px;text-align:center">
+            <div style="font-size:28px;font-weight:700;color:var(--info)" id="countL2">0</div>
+            <div class="level-badge level-2" style="display:inline-block;margin-top:4px">Opérateur</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Entrées/Sorties</div>
+          </div>
+          <div class="card" style="padding:16px;text-align:center">
+            <div style="font-size:28px;font-weight:700;color:var(--warning)" id="countL3">0</div>
+            <div class="level-badge level-3" style="display:inline-block;margin-top:4px">Gestionnaire</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Gestion complète</div>
+          </div>
+          <div class="card" style="padding:16px;text-align:center">
+            <div style="font-size:28px;font-weight:700;color:var(--rouge)" id="countL4">0</div>
+            <div class="level-badge level-4" style="display:inline-block;margin-top:4px">Administrateur</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Accès total</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Liste des utilisateurs</h3></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table id="usersTable">
+                <thead>
+                  <tr>
+                    <th>Identifiant</th>
+                    <th>Nom complet</th>
+                    <th>Poste</th>
+                    <th>Niveau d'accès</th>
+                    <th>Dernière connexion</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ACTIVITY LOG ===== -->
+      <div class="page" id="activityPage">
+        <div class="page-header">
+          <div><h2>📋 Journal d'activité</h2><p>Suivi complet de toutes les actions des utilisateurs</p></div>
+          <div class="page-actions">
+            <select id="filterUser" onchange="renderActivityLog()" style="padding:9px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;background:var(--bg)">
+              <option value="">Tous les utilisateurs</option>
+            </select>
+            <select id="filterAction" onchange="renderActivityLog()" style="padding:9px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;background:var(--bg)">
+              <option value="">Toutes les actions</option>
+              <option value="login">Connexion</option>
+              <option value="logout">Déconnexion</option>
+              <option value="entry">Entrée stock</option>
+              <option value="exit">Sortie stock</option>
+              <option value="create">Création</option>
+              <option value="edit">Modification</option>
+              <option value="delete">Suppression</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="clearActivityLog()">🗑️ Effacer</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="activityLogContainer">
+            <p style="color:var(--text-muted)">Aucune activité enregistrée</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="productModalTitle">📦 Nouveau produit</h3>
+      <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editProductId">
+      <div class="form-grid">
+        <div class="form-group2" style="grid-column:1/-1">
+          <label>Désignation du produit *</label>
+          <input type="text" id="pName" placeholder="Ex: Médicaments antipaludéens">
+        </div>
+        <div class="form-group2">
+          <label>Catégorie *</label>
+          <select id="pCategory">
+            <option value="">-- Choisir --</option>
+            <option>Gadget de visibilité (T-shirt, fanion)</option>
+            <option>Materiel de secours</option>
+            <option>Materiel informatique</option>
+            <option>Consommable informatique</option>
+            <option>Produits d'assurance</option>
+            <option>Pieces détachés (Vehicules)</option>
+            <option>Produits d'entretien hygiène</option>
+            <option>Materiel d'entretien (balaie,brosse,seau)</option>
+            <option>Materiel bio medical</option>
+            <option>Fourniture de bureau</option>
+            <option>Mobilier de bureau</option>
+            <option>Materiel de communication</option>
+            <option>Materiel de climatisation</option>
+            <option>Materiel de construction</option>
+            <option>Autres quincaillerie</option>
+            <option>Autres</option>
+          </select>
+        </div>
+        <div class="form-group2">
+          <label>Unité de mesure *</label>
+          <select id="pUnit">
+            <option value="">-- Choisir --</option>
+            <option>Boîte</option>
+            <option>Sac</option>
+            <option>Flacon</option>
+            <option>Pièce</option>
+            <option>Kg</option>
+            <option>Litre</option>
+            <option>Carton</option>
+            <option>Paquet</option>
+            <option>Paires</option>
+          </select>
+        </div>
+        <div class="form-group2">
+          <label>Durée de longévité (mois) *</label>
+        <input type="number"id="pLongevity" placeholder="Ex: 24" min="0" required>
+          <span class="form-hint">Durée  de vie estimée en mois</span>
+        </div>
+        <div class="form-group2">
+          <label>Poids/Volume unitaire *</label>
+          <input type="text" id="pWeight" placeholder="Ex: 500g, 1L">
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Conditionnement en carton</span></div>
+
+      <div class="form-grid">
+        <div class="form-group2">
+          <label>Nombre de paquets par carton *</label>
+        
+          <input type="number" id="pPackPerCarton" placeholder="Ex: 12" min="0" oninput="updateCartonPreview()">
+          <span class="form-hint">0 ou vide = pas de carton</span>
+        </div>
+        <div class="form-group2">
+          <label>Unité par paquet *</label>
+          <input type="text" id="pUnitPerPack" placeholder="Ex: 10 comprimés" oninput="updateCartonPreview()">
+        </div>
+      </div>
+      <div id="cartonPreview" style="display:none;margin-top:12px">
+        <div class="carton-info" id="cartonInfoBox"></div>
+      </div>
+
+      <div class="section-divider"><span>Informations complémentaires</span></div>
+      <div class="form-group2">
+        <label>Description / Notes * </label>
+        <textarea id="pDescription" placeholder="Informations supplémentaires..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('productModal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveProduct()">✔ Enregistrer le produit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Entry Modal -->
+<div class="modal-overlay" id="entryModal">
+  <div class="modal">
+    <div class="modal-header" style="background:var(--success)">
+      <h3>📥 Nouvelle entrée de stock</h3>
+      <button class="modal-close" onclick="closeModal('entryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Enregistrez un don ou un approvisionnement reçu. Le stock sera automatiquement mis à jour.
+      </div>
+      <div class="form-grid">
+        <div class="form-group2" style="grid-column:1/-1">
+          <label>Produit *</label>
+          <select id="entryProduct" onchange="onEntryProductChange()">
+            <option value="">-- Sélectionner un produit --</option>
+          </select>
+        </div>
+        <div id="entryCartonInfo" style="grid-column:1/-1;display:none">
+          <div class="carton-info" id="entryCartonDetails"></div>
+        </div>
+        <div class="form-group2">
+          <label id="entryQtyCartonLabel">Quantité (Cartons)</label>
+          <input type="number" id="entryQtyCartons" placeholder="0" min="0" value="0" oninput="calcTotalEntry()">
+        </div>
+        <div class="form-group2">
+          <label id="entryQtyPackLabel">Quantité (Paquets supplémentaires)</label>
+          <input type="number" id="entryQtyPacks" placeholder="0" min="0" value="0" oninput="calcTotalEntry()">
+        </div>
+        <div class="form-group2" style="grid-column:1/-1">
+          <div id="entryTotalCalc" style="background:var(--success-light);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--success);display:none"></div>
+        </div>
+        <div class="form-group2">
+          <label>Date de réception *</label>
+          <input type="date" id="entryDate">
+        </div>
+        <div class="form-group2">
+          <label>Date d'expiration</label>
+          <input type="date" id="entryExpiry">
+          <span class="form-hint">Laisser vide si pas de date d'expiration</span>
+        </div>
+        <div class="form-group2">
+          <label>Donateur / Source</label>
+          <select id="entryDonorSource">
+            <option>Acquisition</option>
+            <option>Donateur (don ou achat)</option>
+          </select>
+          <input type="text" id="entryDonor" placeholder="Nom de l'organisation ou personne">
+        </div>
+        <div class="form-group2">
+          <label>Numéro de lot</label>
+          <input type="text" id="entryBatch" placeholder="Ex: LOT-2024-001">
+        </div>
+      </div>
+      <div class="form-group2" style="margin-top:16px">
+        <label>Observations</label>
+        <textarea id="entryNotes" placeholder="Remarques, conditions particulières..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('entryModal')">Annuler</button>
+      <button class="btn btn-success" onclick="saveEntry()">✔ Enregistrer l'entrée</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exit Modal -->
+<div class="modal-overlay" id="exitModal">
+  <div class="modal">
+    <div class="modal-header" style="background:var(--rouge)">
+      <h3>📤 Nouvelle sortie de stock</h3>
+      <button class="modal-close" onclick="closeModal('exitModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Enregistrez une distribution ou sortie de stock. Vérifiez que le stock disponible est suffisant.
+      </div>
+      <div class="form-grid">
+        <div class="form-group2" style="grid-column:1/-1">
+          <label>Produit *</label>
+          <select id="exitProduct" onchange="onExitProductChange()">
+            <option value="">-- Sélectionner un produit --</option>
+          </select>
+        </div>
+        <div id="exitStockInfo" style="grid-column:1/-1;display:none">
+          <div id="exitStockDetails" style="background:var(--rouge-light);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--rouge-dark)"></div>
+        </div>
+        <div class="form-group2">
+          <label>Quantité (Cartons)</label>
+          <input type="number" id="exitQtyCartons" placeholder="0" min="0" value="0" oninput="calcTotalExit()">
+        </div>
+        <div class="form-group2">
+          <label>Quantité (Paquets)</label>
+          <input type="number" id="exitQtyPacks" placeholder="0" min="0" value="0" oninput="calcTotalExit()">
+        </div>
+        <div class="form-group2" style="grid-column:1/-1">
+          <div id="exitTotalCalc" style="background:var(--rouge-light);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--rouge-dark);display:none"></div>
+        </div>
+        <div class="form-group2">
+          <label>Date de sortie *</label>
+          <input type="date" id="exitDate">
+        </div>
+        <div class="form-group2">
+          <label>Région / Ville *</label>
+          <select id="exitRegion">
+            <option value="">-- Sélectionner --</option>
+          </select>
+        </div>
+        <div class="form-group2" style="grid-column:1/-1">
+          <label>Bénéficiaire / Destinataire </label>
+          <input type="text" id="exitBeneficiary" placeholder="Nom ou organisation bénéficiaire">
+        </div>
+        <div class="form-group2">
+          <label>Motif de la sortie</label>
+          <select id="exitReason">
+            <option>Don aux comités locaux</option>
+            <option>Donation aux personnels</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group2" style="margin-top:16px">
+        <label>Observations</label>
+        <textarea id="exitNotes" placeholder="Remarques, conditions particulières..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('exitModal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveExit()">✔ Enregistrer la sortie</button>
+    </div>
+  </div>
+</div>
+
+<!-- Region Modal -->
+<div class="modal-overlay" id="regionModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <h3>🗺️ Nouvelle région / ville</h3>
+      <button class="modal-close" onclick="closeModal('regionModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editRegionId">
+      <div class="form-group2" style="margin-bottom:16px">
+        <label>Nom de la région / ville *</label>
+        <input type="text" id="rName" placeholder="Ex: Abidjan, Bouaké, Yamoussoukro...">
+      </div>
+      <div class="form-group2" style="margin-bottom:16px">
+        <label>Zone géographique</label>
+        <select id="rZone">
+          <option value="">-- Sélectionner --</option>
+          <option>Grand Abidjan</option>
+          <option>Nord</option>
+          <option>Sud</option>
+          <option>Est</option>
+          <option>Ouest</option>
+          <option>Centre</option>
+          <option>Centre-Nord</option>
+          <option>Centre-Ouest</option>
+          <option>Centre-Est</option>
+        </select>
+      </div>
+      <div class="form-group2">
+        <label>Responsable local</label>
+        <input type="text" id="rContact" placeholder="Nom du responsable">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('regionModal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveRegion()">✔ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h3 id="userModalTitle">👤 Nouvel utilisateur</h3>
+      <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editUserId">
+      <div class="alert alert-info" style="margin-bottom:16px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div><strong>Niveaux d'accès :</strong><br>
+        🔵 <b>Niveau 1</b> (Observateur) : Lecture seule<br>
+        🟡 <b>Niveau 2</b> (Opérateur) : Entrées et sorties<br>
+        🟠 <b>Niveau 3</b> (Gestionnaire) : Gestion complète des stocks<br>
+        🔴 <b>Niveau 4</b> (Administrateur) : Tout + surveillance des utilisateurs</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group2">
+          <label>Identifiant *</label>
+          <input type="text" id="uUsername" placeholder="Ex: jean.kouame" id="editUserId">
+        </div>
+        <div class="form-group2">
+          <label>Nom complet *</label>
+          <input type="text" id="uFullname" placeholder="Ex: Jean Kouamé">
+        </div>
+        <div class="form-group2">
+          <label>Mot de passe *</label>
+          <input type="password" id="uPassword" placeholder="••••••••">
+        </div>
+        <div class="form-group2">
+          <label>Poste / Fonction</label>
+          <input type="text" id="uRole" placeholder="Ex: Agent de terrain">
+        </div>
+        <div class="form-group2" style="grid-column:1/-1">
+          <label>Niveau d'accès *</label>
+          <select id="uLevel">
+            <option value="1">Niveau 1 — Observateur (lecture seule)</option>
+            <option value="2">Niveau 2 — Opérateur (entrées/sorties)</option>
+            <option value="3">Niveau 3 — Gestionnaire (gestion complète)</option>
+            <option value="4">Niveau 4 — Administrateur (accès total)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('userModal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveUser()">✔ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header" style="background:#EF4444">
+      <h3>⚠️ Confirmer la suppression</h3>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:15px;color:var(--text)" id="confirmText">Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:8px">Cette action est irréversible.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Annuler</button>
+      <button class="btn btn-primary" style="background:#EF4444" id="confirmBtn">Oui, supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="detailModalTitle">Détails</h3>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="detailModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('detailModal')">Fermer</button>
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
