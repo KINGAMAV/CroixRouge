@@ -198,6 +198,8 @@ function initApp() {
   const lvl = currentUser.level;
   document.getElementById('navAdminSection').style.display = lvl >= 3 ? 'block' : 'none';
   document.getElementById('navUsers').style.display = lvl >= 3 ? 'flex' : 'none';
+  // Only admin (level 4) can access Organisation section
+  document.getElementById('navOrganisationSection').style.display = lvl === 4 ? 'block' : 'none';
   document.getElementById('navActivity').style.display = lvl >= 4 ? 'flex' : 'none';
   
   // Level 1: read only
@@ -242,6 +244,7 @@ function showPage(page) {
   const lvl = currentUser ? currentUser.level : 0;
   if ((page==='users' || page==='activity') && lvl < 3) { toast('Accès non autorisé','error'); return; }
   if (page==='activity' && lvl < 4) { toast('Accès réservé aux administrateurs','error'); return; }
+  if ((page==='regions' || page==='reports') && lvl !== 4) { toast('Accès réservé aux administrateurs','error'); return; }
 
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -922,14 +925,20 @@ function renderDashboard() {
   const alertsDiv = document.getElementById('dashAlerts');
   alertsDiv.innerHTML = alertsHTML || '<p style="color:var(--text-muted);font-size:14px">✅ Aucune alerte active</p>';
 
-  // Activity
-  const recentActivity = db.activityLog.slice(0,8);
-  const actDiv = document.getElementById('dashActivity');
-  actDiv.innerHTML = recentActivity.length===0 ? '<p style="color:var(--text-muted);font-size:14px">Aucune activité récente</p>' :
-    recentActivity.map(a=>`<div class="activity-item">
-      <div class="activity-dot ${a.action}"></div>
-      <div><div class="activity-text"><strong>${a.fullname}</strong> — ${a.details}</div><div class="activity-meta">${fmtDateTime(a.timestamp)}</div></div>
-    </div>`).join('');
+  // Activity - only for admin
+  const userActivityCard = document.getElementById('userActivityCard');
+  if (currentUser && currentUser.level === 4) {
+    userActivityCard.style.display = 'block';
+    const recentActivity = db.activityLog.slice(0,8);
+    const actDiv = document.getElementById('dashActivity');
+    actDiv.innerHTML = recentActivity.length===0 ? '<p style="color:var(--text-muted);font-size:14px">Aucune activité récente</p>' :
+      recentActivity.map(a=>`<div class="activity-item">
+        <div class="activity-dot ${a.action}"></div>
+        <div><div class="activity-text"><strong>${a.fullname}</strong> — ${a.details}</div><div class="activity-meta">${fmtDateTime(a.timestamp)}</div></div>
+      </div>`).join('');
+  } else {
+    userActivityCard.style.display = 'none';
+  }
 }
 
 // ======= REPORTS =======
