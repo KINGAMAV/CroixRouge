@@ -50,11 +50,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
 .login-logo { text-align:center; margin-bottom:32px; }
 .login-logo .cross-icon {
-  width:70px; height:70px; background:var(--white); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
-  box-shadow:0 8px 24px rgba(255, 255, 255, 0.4);
 }
-.cross-icon svg { width:300px; height:auto; fill:rgb(255, 0, 0); }
+
 .login-logo h1 { font-family:'Lora',serif; font-size:22px; color:var(--navy); font-weight:700; }
 .login-logo p { color:var(--text-light); font-size:13px; margin-top:4px; }
 .login-badge {
@@ -93,7 +90,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 }
 .topbar-brand { display:flex; align-items:center; gap:14px; }
 .topbar-brand .mini-cross {
-  width:38px; height:38px; background:var(--white); border-radius:50%;
+  width:38px; height:38px;  border-radius:70%;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
 .topbar-brand .mini-cross svg { width:22px; height:22px; fill:red; }
@@ -480,6 +477,3 @@ body.is-mobile #reportStats { grid-template-columns:1fr 1fr !important; }
 .welcome-banner .cross-bg { width:80px; height:80px; opacity:.15; position:relative; z-index:0; }
 
 
-.icon{
-    background-color: #1565C0;
-}
