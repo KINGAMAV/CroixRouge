@@ -58,6 +58,7 @@
         <h1>Croix-Rouge CI</h1>
         <span>Gestion des Infrastructures</span>
       </div>
+
     </div>
     <div class="topbar-right">
       <span class="topbar-time" id="topbarTime"></span>
@@ -638,7 +639,10 @@
             <option>Acquisition</option>
             <option>Donateur (don ou achat)</option>
           </select>
-          <input type="text" id="entryDonor" placeholder="Nom de l'organisation ou personne">
+          <input type="text" id="entryDonor" placeholder="Nom de l'organisation ou personne" style="display:none">
+          <input type="number" id="entryDonorAmount" placeholder="Montant du don" style="display:none">
+
+          <input type="number" id="entryAcqAmount" placeholder="Montant de l'acquisition en FCFA " >
         </div>
         <div class="form-group2">
           <label>Numéro de lot</label>

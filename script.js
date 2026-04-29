@@ -1196,5 +1196,32 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (hint) hint.innerHTML = '<hr style="margin:12px 0;border:none;border-top:1px solid var(--border)"><strong>Comptes de démonstration :</strong><br>admin/Admin@2024 (Niveau 4)<br>gestionnaire/Gest@2024 (Niveau 3)<br>operateur/Oper@2024 (Niveau 2)<br>observateur/Obs@2024 (Niveau 1)';
   document.querySelectorAll('.nav-item').forEach(item=>{
     item.addEventListener('click', ()=>{ if(document.body.classList.contains('is-mobile')) closeSidebar(); });
+
+
+    //petit ajout 1
+document.getElementById("entryDonorSource").addEventListener("change", function () {
+    const donorInput = document.getElementById("entryAcqAmount");
+
+    if (this.value === "Acquisition") {
+        donorInput.style.display = "block";
+    } else {
+        donorInput.style.display = "none";
+        donorInput.value = ""; // on vide le montant si ce n’est pas un donateur
+    }
+});
+
+    //petit ajout 2
+document.getElementById("entryDonorSource").addEventListener("change", function () {
+    const entryDonor = document.getElementById("entryDonor");
+
+    if (this.value === "Donateur (don ou achat)") {
+        entryDonor.style.display = "block";
+    } else {
+        entryDonor.style.display = "none";
+        entryDonor.value = ""; // on vide le nom si ce n’est pas un donateur
+    }
+});
   });
 });
+
+
